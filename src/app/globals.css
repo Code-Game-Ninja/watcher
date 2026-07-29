@@ -20,25 +20,26 @@
 
 body {
   color: var(--text-main);
-  /* Use a high quality living room interior to make the glassmorphism pop */
-  background: url('https://images.unsplash.com/photo-1598928506311-c55dedbfc185?q=80&w=2070') no-repeat center center fixed;
-  background-size: cover;
   font-family: 'Outfit', sans-serif;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #000;
 }
 
-/* Subtle overlay to make the image darker so the UI stands out */
+/* Spider-Man Blurred Background */
 body::before {
   content: "";
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
+  /* Make it larger than the viewport so the blur edges don't bleed inwards */
+  top: -5%;
+  left: -5%;
+  width: 110vw;
+  height: 110vh;
+  background: url('https://images.unsplash.com/photo-1635805737707-575885ab0820?q=80&w=2070') no-repeat center center;
+  background-size: cover;
+  filter: blur(15px) brightness(0.3);
   z-index: -1;
   pointer-events: none;
 }
