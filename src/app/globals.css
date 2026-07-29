@@ -1,20 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --primary: #E50914; /* Netflix Red */
-  --primary-hover: #F40612;
-  --secondary: #564d4d;
-  
-  --background: #141414; /* Netflix Background */
-  --surface: #181818;
-  --surface-glass: rgba(20, 20, 20, 0.6); /* Glassmorphism */
-  
-  --text-main: #FFFFFF;
-  --text-muted: #808080;
-  
-  --border: rgba(255, 255, 255, 0.1);
-  --danger: #ef4444;
-  --success: #10b981;
+  --bg-color: #000000;
+  --text-main: #ffffff;
+  --text-muted: #9ca3af;
+  --glass-bg: rgba(20, 20, 20, 0.4);
+  --glass-bg-solid: rgba(30, 30, 30, 0.7);
+  --glass-bg-hover: rgba(50, 50, 50, 0.5);
+  --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+  --accent: #e50914;
+  --accent-hover: #b81d24;
 }
 
 * {
@@ -23,25 +18,27 @@
   margin: 0;
 }
 
-html,
 body {
-  max-width: 100vw;
-  overflow-x: hidden;
-  background-color: var(--background);
   color: var(--text-main);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
+  /* Use a high quality living room interior to make the glassmorphism pop */
+  background: url('https://images.unsplash.com/photo-1598928506311-c55dedbfc185?q=80&w=2070') no-repeat center center fixed;
+  background-size: cover;
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* Subtle overlay to make the image darker so the UI stands out */
 body::before {
-  content: '';
+  content: "";
   position: fixed;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.08) 0%, rgba(15, 17, 21, 0) 50%),
-              radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.05) 0%, rgba(15, 17, 21, 0) 40%);
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
   z-index: -1;
   pointer-events: none;
 }
@@ -64,19 +61,19 @@ input, textarea {
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: rgba(255, 255, 255, 0.4);
 }

@@ -5,13 +5,19 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
+// Clean SVG Icons
+const Icons = {
+  Home: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>,
+  Search: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/></svg>,
+  Play: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>,
+  Settings: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+};
+
 export default function Home() {
   const [videos, setVideos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Interactive State
-  const [activeTab, setActiveTab] = useState('Home'); // Home, Discovery, Coming soon
-  const [activeCategory, setActiveCategory] = useState('Movies');
+  const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   
   const router = useRouter();
@@ -34,211 +40,119 @@ export default function Home() {
     }
   };
 
-  // Filter Logic
   const filteredVideos = videos.filter(v => {
     const matchesSearch = v.title.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = activeCategory === 'More' ? true : v.category === activeCategory;
+    const matchesCategory = activeCategory === 'All' ? true : v.category === activeCategory;
     return matchesSearch && matchesCategory;
   });
 
   const featuredVideo = filteredVideos.find(v => v.isFeatured) || filteredVideos[0];
-  const recommendedVideos = filteredVideos.filter(v => v !== featuredVideo).slice(0, 8);
-  const trendingVideos = videos.slice(0, 3); // Sidebar trending stays static or top 3 globally
-  const continueWatching = videos.slice(-3).reverse();
+  const recommendedVideos = filteredVideos.filter(v => v !== featuredVideo);
 
   if (isLoading) {
-    return <div className={styles.loadingScreen}>Loading Waatcher...</div>;
+    return <div className={styles.loadingScreen}><h2>Loading Waatcher...</h2></div>;
   }
 
   return (
     <div className={styles.appContainer}>
       
-      {/* LEFT SIDEBAR */}
+      {/* SIDEBAR */}
       <aside className={styles.sidebar}>
         <div className={styles.logo}>WAATCHER</div>
         
         <nav className={styles.navMenu}>
-          <button 
-            onClick={() => {setActiveTab('Home'); setSearchQuery('');}} 
-            className={`${styles.navItem} ${activeTab === 'Home' ? styles.active : ''}`}
-          >
-            <span className={styles.icon}>🏠</span> Home
+          <button onClick={() => {setActiveCategory('All'); setSearchQuery('');}} className={`${styles.navItem} ${activeCategory === 'All' ? styles.active : ''}`}>
+            <Icons.Home /> Home
           </button>
-          <button 
-            onClick={() => setActiveTab('Discovery')} 
-            className={`${styles.navItem} ${activeTab === 'Discovery' ? styles.active : ''}`}
-          >
-            <span className={styles.icon}>🧭</span> Discovery
-          </button>
-          <button 
-            onClick={() => setActiveTab('Coming soon')} 
-            className={`${styles.navItem} ${activeTab === 'Coming soon' ? styles.active : ''}`}
-          >
-            <span className={styles.icon}>⏰</span> Coming soon
-          </button>
+          {['Movies', 'TV Series', 'Animation'].map(cat => (
+            <button 
+              key={cat}
+              onClick={() => setActiveCategory(cat)} 
+              className={`${styles.navItem} ${activeCategory === cat ? styles.active : ''}`}
+            >
+              <Icons.Play /> {cat}
+            </button>
+          ))}
         </nav>
 
-        <div className={styles.profilesSection}>
-          <h3 className={styles.sectionTitle}>Profiles</h3>
-          <div className={styles.profile}>
-            <div className={styles.avatar}>👤</div> Guest
-          </div>
-          <Link href="/admin" className={styles.profile}>
-            <div className={styles.avatarAdmin}>⚙️</div> Admin
+        <div className={styles.sidebarBottom}>
+          <Link href="/admin" className={styles.adminBtn}>
+            <Icons.Settings /> Admin Dashboard
           </Link>
         </div>
       </aside>
 
       {/* MAIN CONTENT */}
       <main className={styles.mainContent}>
+        
+        {/* Top Header */}
         <header className={styles.topNav}>
-          <div className={styles.categories}>
-            {['Movies', 'TV Series', 'Animation', 'More'].map(cat => (
-              <span 
-                key={cat}
-                onClick={() => {
-                  setActiveCategory(cat);
-                  setActiveTab('Home');
-                }}
-                className={activeCategory === cat ? styles.catActive : ''}
-              >
-                {cat}
-              </span>
-            ))}
+          <div className={styles.searchBar}>
+            <Icons.Search />
+            <input 
+              type="text" 
+              placeholder="Search movies..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
         </header>
 
-        {activeTab === 'Coming soon' ? (
-          <div className={styles.placeholderScreen}>
-            <h2>No Upcoming Releases</h2>
-            <p>Check back later for exciting new content!</p>
-          </div>
-        ) : activeTab === 'Discovery' ? (
-          <div className={styles.placeholderScreen}>
-            <h2>Discovery Mode</h2>
-            <p>Try searching for a title on the right, or explore our categories above.</p>
-          </div>
-        ) : filteredVideos.length === 0 ? (
-          <div className={styles.placeholderScreen}>
+        {filteredVideos.length === 0 ? (
+          <div className={styles.loadingScreen}>
             <h2>No results found</h2>
-            <p>Try selecting a different category or adjusting your search.</p>
+            <p>Try a different search term or category.</p>
           </div>
         ) : (
-          <>
-            {featuredVideo && (
-              <div className={styles.heroSection}>
-                <div 
-                  className={styles.heroBackdrop} 
-                  style={{ backgroundImage: `url(${featuredVideo.thumbnailUrl || 'https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=2070'})` }}
-                >
-                  <div className={styles.heroGradient}></div>
-                </div>
-                
-                <div className={styles.heroContent}>
-                  <div className={styles.tags}>
-                    <span className={styles.tag}>{featuredVideo.category}</span>
-                    <span className={styles.tag}>HD</span>
+          <div className={styles.scrollArea}>
+            
+            {/* Hero Section */}
+            {featuredVideo && !searchQuery && (
+              <div className={styles.heroContainer}>
+                <img src={featuredVideo.thumbnailUrl || 'https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=2070'} alt="Hero" className={styles.heroImg} />
+                <div className={styles.heroOverlay}>
+                  <div className={styles.heroTags}>
+                    <span className={styles.heroTag}>{featuredVideo.category}</span>
                   </div>
                   <h1 className={styles.heroTitle}>{featuredVideo.title}</h1>
-                  <p className={styles.heroDesc}>{featuredVideo.description || 'Experience the ultimate cinematic journey.'}</p>
+                  <p className={styles.heroDesc}>{featuredVideo.description || 'Watch now on Waatcher in stunning high definition.'}</p>
                   
                   <div className={styles.heroActions}>
-                    <button onClick={() => router.push(`/watch/${featuredVideo._id}`)} className={styles.playBtn}>
-                      ▶ Watch Now
+                    <button onClick={() => router.push(`/watch/${featuredVideo._id}`)} className={styles.btnPlay}>
+                      <Icons.Play /> Watch Now
                     </button>
                   </div>
                 </div>
               </div>
             )}
 
-            <div className={styles.rowSection}>
-              <div className={styles.rowHeader}>
-                <h2>{searchQuery ? `Search Results for "${searchQuery}"` : `${activeCategory} Recommended for you`}</h2>
-                <button className={styles.seeAll}>See all</button>
-              </div>
+            {/* Video Grid */}
+            <div className={styles.gridSection}>
+              <h2 className={styles.sectionTitle}>
+                {searchQuery ? `Search Results for "${searchQuery}"` : `${activeCategory === 'All' ? 'Recommended' : activeCategory}`}
+              </h2>
               
-              {recommendedVideos.length > 0 ? (
-                <div className={styles.videoRow}>
-                  {recommendedVideos.map(video => (
-                    <div key={video._id} className={styles.videoCard} onClick={() => router.push(`/watch/${video._id}`)}>
-                      <img 
-                        src={video.thumbnailUrl || 'https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=400'} 
-                        alt={video.title} 
-                        className={styles.cardImg}
-                      />
-                      <div className={styles.cardInfo}>
-                        <h4>{video.title}</h4>
-                        <div className={styles.cardMeta}>
-                          <span>{video.category}</span>
-                          <span className={styles.playIcon}>▶</span>
-                        </div>
+              <div className={styles.videoGrid}>
+                {recommendedVideos.map(video => (
+                  <div key={video._id} className={styles.videoCard} onClick={() => router.push(`/watch/${video._id}`)}>
+                    <div className={styles.imgWrapper}>
+                      <img src={video.thumbnailUrl || 'https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=400'} className={styles.cardImg} alt={video.title}/>
+                      <div className={styles.cardOverlay}>
+                        <button className={styles.cardPlayBtn}><Icons.Play /></button>
                       </div>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <p style={{ color: 'var(--text-muted)' }}>No other {activeCategory.toLowerCase()} available right now.</p>
-              )}
+                    <div className={styles.cardInfo}>
+                      <h4 className={styles.cardTitle}>{video.title}</h4>
+                      <p className={styles.cardCategory}>{video.category}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </>
+
+          </div>
         )}
       </main>
-
-      {/* RIGHT SIDEBAR */}
-      <aside className={styles.rightSidebar}>
-        <div className={styles.searchBar}>
-          <span>🔍</span>
-          <input 
-            type="text" 
-            placeholder="Search movies..." 
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setActiveTab('Home');
-            }}
-          />
-        </div>
-
-        <div className={styles.trendingWidget}>
-          <div className={styles.widgetHeader}>
-            <h3>Trending Now</h3>
-          </div>
-          <div className={styles.widgetList}>
-            {trendingVideos.map(video => (
-              <div key={video._id} className={styles.trendingCard} onClick={() => router.push(`/watch/${video._id}`)}>
-                <img 
-                  src={video.thumbnailUrl || 'https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=200'} 
-                  alt={video.title} 
-                />
-                <div className={styles.trendingPlay}>▶</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className={styles.continueWidget}>
-          <div className={styles.widgetHeader}>
-            <h3>Continue Watching</h3>
-          </div>
-          <div className={styles.continueList}>
-            {continueWatching.map(video => (
-              <div key={video._id} className={styles.continueItem} onClick={() => router.push(`/watch/${video._id}`)}>
-                <div className={styles.continueThumb}>
-                  <img 
-                    src={video.thumbnailUrl || 'https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?q=80&w=100'} 
-                    alt={video.title} 
-                  />
-                </div>
-                <div className={styles.continueInfo}>
-                  <h4>{video.title}</h4>
-                  <p>{video.category}</p>
-                </div>
-                <div className={styles.miniPlay}>▶</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </aside>
 
     </div>
   );

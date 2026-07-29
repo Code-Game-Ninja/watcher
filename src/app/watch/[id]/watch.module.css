@@ -1,7 +1,34 @@
 .container {
-  max-width: 1200px;
+  width: 100vw;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 2rem 5%;
+  transition: all 0.3s ease;
+}
+
+.containerTheater {
+  padding: 0;
+  margin-top: -80px; /* To pull it up if there's a global header, but we don't have one */
+}
+
+/* Lights Off Overlay */
+.dimOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 50;
+  pointer-events: none; /* Let clicks pass through if needed, but usually we just want it visual */
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s ease;
+}
+
+.dimOverlay.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto; /* Catch clicks to un-dim */
 }
 
 .centered {
@@ -16,8 +43,8 @@
 .loader {
   width: 48px;
   height: 48px;
-  border: 4px solid var(--border);
-  border-bottom-color: var(--primary);
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-bottom-color: var(--accent);
   border-radius: 50%;
   animation: rotation 1s linear infinite;
 }
@@ -28,8 +55,9 @@
 }
 
 .errorBox {
-  background: var(--surface-glass);
-  border: 1px solid var(--border);
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   padding: 3rem;
   text-align: center;
@@ -37,7 +65,7 @@
 }
 
 .errorBox h2 {
-  color: var(--danger);
+  color: #ef4444;
   margin-bottom: 1rem;
 }
 
@@ -47,7 +75,7 @@
 }
 
 .backBtn {
-  background: var(--primary);
+  background: var(--accent);
   color: white;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
@@ -65,6 +93,13 @@
   color: var(--text-muted);
   font-weight: 500;
   transition: color 0.2s;
+  position: relative;
+  z-index: 10;
+}
+
+.containerTheater .backLink {
+  margin-left: 2rem;
+  margin-top: 2rem;
 }
 
 .backLink:hover {
@@ -72,19 +107,39 @@
 }
 
 .playerWrapper {
-  max-width: 1000px;
+  width: 100%;
+  max-width: 1800px;
   margin: 0 auto;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* When lights are dimmed, the player needs to be above the overlay */
+.playerWrapper.dimmed {
+  z-index: 60;
+}
+
+.containerTheater .playerWrapper {
+  max-width: 100%;
+  width: 100vw;
 }
 
 .videoContainer {
   width: 100%;
-  border-radius: 16px;
+  border-radius: 20px;
   overflow: hidden;
   background: #000;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   aspect-ratio: 16/9;
   position: relative;
+  transition: all 0.3s ease;
+}
+
+.containerTheater .videoContainer {
+  border-radius: 0;
+  border: none;
+  max-height: 85vh; /* Keep some space for controls in theater mode */
 }
 
 .videoPlayer {
@@ -94,9 +149,70 @@
   display: block;
 }
 
+/* Controls Bar underneath video */
+.controlsBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.containerTheater .controlsBar {
+  margin: 1rem 2rem;
+}
+
+.controlsLeft, .controlsRight {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.controlBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.controlBtn:hover, .controlBtn.active {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.speedWidget {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #10b981; /* Green for good network */
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+.speedWidget.slow {
+  color: #f59e0b; /* Yellow/Orange */
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
 .videoDetails {
   margin-top: 2rem;
-  padding-bottom: 4rem;
+  padding: 0 1rem 4rem;
+}
+.containerTheater .videoDetails {
+  padding: 0 3rem 4rem;
 }
 
 .titleRow {
@@ -108,50 +224,10 @@
 }
 
 .videoTitle {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
   margin: 0;
   flex: 1;
-}
-
-.actionButtons {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.actionBtn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: var(--text-main);
-  background: var(--surface-glass);
-  border: 1px solid var(--border);
-  transition: all 0.2s ease;
-}
-
-.actionBtn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.deleteBtn {
-  color: #fca5a5;
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.2);
-}
-
-.deleteBtn:hover {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #fecaca;
-}
-
-.icon {
-  font-size: 1.1rem;
 }
 
 .meta {
@@ -164,10 +240,11 @@
 }
 
 .descriptionBox {
-  background: var(--surface-glass);
-  border: 1px solid var(--border);
+  background: rgba(20, 20, 20, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   padding: 1.5rem;
-  color: var(--text-main);
+  color: #ccc;
   line-height: 1.6;
+  max-width: 900px;
 }
