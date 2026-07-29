@@ -16,7 +16,15 @@
   display: flex;
   flex-direction: column;
   padding: 2rem;
-  z-index: 10;
+  z-index: 100;
+  transition: transform 0.3s ease;
+}
+
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 3rem;
 }
 
 .logo {
@@ -24,7 +32,14 @@
   font-size: 1.8rem;
   font-weight: 800;
   letter-spacing: -1px;
-  margin-bottom: 3rem;
+}
+
+.closeMenuBtn {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
 }
 
 .navMenu {
@@ -103,6 +118,22 @@
   left: 0;
   right: 0;
   z-index: 5;
+}
+
+.mobileMenuBtn {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.logoMobile {
+  display: none;
+  color: var(--accent);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -1px;
 }
 
 .searchBar {
@@ -312,4 +343,80 @@
   justify-content: center;
   height: 100%;
   color: var(--text-muted);
+}
+
+/* --- MOBILE RESPONSIVENESS --- */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+  }
+
+  .sidebarOpen {
+    transform: translateX(0);
+  }
+
+  .mobileOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 50;
+    backdrop-filter: blur(4px);
+  }
+
+  .closeMenuBtn {
+    display: block;
+  }
+
+  .topNav {
+    padding: 0 1.5rem;
+    justify-content: space-between;
+  }
+
+  .mobileMenuBtn {
+    display: block;
+  }
+
+  .logoMobile {
+    display: block;
+  }
+
+  .searchBar {
+    width: 150px;
+  }
+
+  .scrollArea {
+    padding: 1rem 1.5rem 3rem;
+  }
+
+  .heroContainer {
+    height: 350px;
+    border-radius: 20px;
+  }
+
+  .heroOverlay {
+    padding: 1.5rem;
+  }
+
+  .heroTitle {
+    font-size: 2rem;
+    max-width: 100%;
+  }
+
+  .heroDesc {
+    max-width: 100%;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .videoGrid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+  }
 }
